@@ -1,27 +1,26 @@
 package com.codarscampus.AssignmentSubmissionApp.service;
 
 import com.codarscampus.AssignmentSubmissionApp.domain.User;
+import com.codarscampus.AssignmentSubmissionApp.repositry.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
 
     @Override
     @SneakyThrows
     public UserDetails loadUserByUsername(String username) {
-        return User
-                .builder()
-                .id(1L)
-                .username(username)
-                .password(passwordEncoder.encode("maxim1"))
-                .build();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        return userOptional.orElseThrow(() -> new UsernameNotFoundException("Invalid user credentials"));
     }
 }
